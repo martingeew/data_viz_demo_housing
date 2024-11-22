@@ -77,6 +77,35 @@ merged_df[merged_df['area_name']=='South Korea']
 
 # data needed for facet plot of migration by citizenship in NZ or internationally long form: index: [country, year], columns: ['net', 'departures','arrivals]
 
+
+migration_data = pd.read_csv("../data/raw/df_citizenship_direction_202312.csv")
+
+df=migration_data[migration_data['Citizenship'].isin([
+    'New Zealand',
+    'Australia', 
+    'Fiji', 
+    "China, People's Republic of",
+    'India',
+    'Korea, Republic of',
+    'South Africa',
+     'United Kingdom',
+    ])]
+
+df = df.pivot(
+    index=["Month", "Citizenship"], 
+    columns="Direction", 
+    values="Count"
+).reset_index()
+
+df['arrivals_sum'] = df.groupby('Citizenship')['Arrivals'].transform(lambda x: x.rolling(window=12, min_periods=12).sum())
+df['departures_sum'] = df.groupby('Citizenship')['Departures'].transform(lambda x: x.rolling(window=12, min_periods=12).sum())
+
+df['Month'] = pd.to_datetime(df['Month'])
+
+df=df[df['Month']>='2001-12-01']
+
+
+
 # data needed for facet plot long form: index: [country, year], columns: ['dwellings', 'population']
 df_country=data[data['area_level'].isin([ 'country'])].copy() 
 
