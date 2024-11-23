@@ -211,5 +211,10 @@ df["Month"] = pd.to_datetime(df["Month"])
 
 df = df[df["Month"] >= "2001-12-01"]
 
+df['Citizenship'] = df['Citizenship'].replace({
+    "China, People's Republic of": 'China',
+    'Viet Nam': 'Vietnam'
+})
+
 # save df to csv
 df.to_csv("../data/processed/nz_migration_facet_data_202312.csv", index=False)
