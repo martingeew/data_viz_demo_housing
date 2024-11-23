@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 
 ### Main plot
 # Todo:
-# Add all countries
 # Gridlines - add and colour (use ramen plot)
 # Splines
 # have axes on bnoth sides
@@ -63,7 +62,7 @@ def single_plot(x, y1, y2, name, ax):
     # added a 'size' argument
     # ax.set_xticklabels(xticks, color=GREY40, size=10)
 
-    # ax.tick_params(axis="x", colors=GREY40)
+    ax.tick_params(axis="x", colors=GREY40)
 
     # yticks = [0, 10, 20]
     # ax.set_yticks(yticks)
@@ -72,13 +71,13 @@ def single_plot(x, y1, y2, name, ax):
     # ax.set_yticklabels(yticks, color=GREY40, size=10)
     # ax.set_ylim((-1, 26))
 
-    # ax.tick_params(axis="y", colors=GREY40)
+    ax.tick_params(axis="y", colors=GREY40)
 
-    # ax.grid(which="minor", lw=0.4, alpha=0.4)
-    # ax.grid(which="major", lw=0.8, alpha=0.4)
+    ax.grid(which="minor", lw=0.4, alpha=0.4)
+    ax.grid(which="major", lw=0.8, alpha=0.4)
 
-    # ax.yaxis.set_tick_params(which="both", length=0)
-    # ax.xaxis.set_tick_params(which="both", length=0)
+    ax.yaxis.set_tick_params(which="both", length=0)
+    ax.xaxis.set_tick_params(which="both", length=0)
 
     ax.spines["left"].set_color("none")
     ax.spines["bottom"].set_color("none")
