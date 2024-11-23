@@ -2,24 +2,26 @@ import pandas as pd
 
 import matplotlib.pyplot as plt
 
+from matplotlib.lines import Line2D # for the legend
+
+import matplotlib.patches as patches # for the legend
+
 
 ### Facet plot
 
 ### Main plot
 # Todo:
-# have axes on bnoth sides
 # Make axes value in k
 # Fonts - choose a font and stick to it for the future (casual modern minimalist)
-# Colour pallete
-# axis labels and ticks with a font and colour sames as grid lines
-# have same axes y values
-# try different countries or update NZ data
-# Who's filling the gap?
+# update NZ data
+# title: Who's filling the gap?
 
 # load data
 data = pd.read_csv(
     "../data/processed/nz_migration_facet_data_202312.csv", parse_dates=["Month"]
 )
+
+### Constants
 
 BLUE = '#2166ACFF'
 BLUE_LIGHT = '#4393C3FF'
@@ -70,7 +72,7 @@ def single_plot(x, y1, y2, name, ax):
     ax.set_title(name, weight="bold", size=9, color=CHARCOAL)
 
 
-df_plot = data[["Month", "Citizenship", "arrivals_sum", "departures_sum"]]
+
 
 NROW = 3
 NCOL = 3
@@ -79,6 +81,10 @@ NAMES = ["New Zealand"] + list(
     .sort_values(by="net_sum", ascending=False)["Citizenship"]
     .unique()
 )
+
+### Plot
+
+df_plot = data[["Month", "Citizenship", "arrivals_sum", "departures_sum"]]
 
 # Create the figure and axes for subplots
 fig, axes = plt.subplots(NROW, NCOL, figsize=(12, 10), sharex=True, sharey=True)
@@ -104,9 +110,53 @@ for i, name in enumerate(NAMES):
 # Remove any unused subplots
 for j in range(len(NAMES), len(axes_flat)):
     fig.delaxes(axes_flat[j])
+    
+
+# Create handles for lines.
+handles = [
+    Line2D([], [], c=color, lw=1.2, label=label)
+    for label, color in zip(["Departures", "Arrivals"], [BLUE, RED])
+]
+
+# Add legend for the lines
+fig.legend(
+    handles=handles,
+    loc=(0.75, 0.95), # This coord is bottom-left corner
+    ncol=2,           # 1 row, 2 columns layout
+    columnspacing=1,  # Space between columns
+    handlelength=1.2, # Line length
+    frameon=False     # No frame
+)
+
+
+# Create handles for the area fill with `patches.Patch()`
+outflow = patches.Patch(facecolor=BLUE_LIGHT, alpha=0.3, label="Net outflow")
+inflow = patches.Patch(facecolor=RED_LIGHT, alpha=0.3, label="Net inflow")
+
+fig.legend(
+    handles=[outflow, inflow],
+    loc=(0.75, 0.92), # This coord is top-right corner
+    ncol=2,          # 1 row, 2 columns layout
+    columnspacing=1, # Space between columns
+    handlelength=2,  # Area length
+    handleheight=2,  # Area height
+    frameon=False,   # No frame
+)
+
+# Title
+fig.text(
+    s="Who are filling the gaps in migration",
+    x=0.05,
+    y=0.98,
+    color=CHARCOAL,
+    fontsize=26,
+    font=font,
+    ha="left",
+    va="top",
+)
 
 # Adjust layout and show the plot
 plt.tight_layout()
-plt.subplots_adjust(top=0.9)
-fig.suptitle("Arrivals vs Departures for Different Countries")
+plt.subplots_adjust(top=0.85)
+# fig.suptitle("Arrivals vs Departures for Different Countries")
 plt.show()
