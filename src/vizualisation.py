@@ -7,62 +7,45 @@ import matplotlib.pyplot as plt
 
 ### Main plot
 # Todo:
-# Gridlines - add and colour (use ramen plot)
-# Splines
 # have axes on bnoth sides
 # Make axes value in k
 # Fonts - choose a font and stick to it for the future (casual modern minimalist)
 # Colour pallete
 # axis labels and ticks with a font and colour sames as grid lines
 # have same axes y values
-# Annotations
 # try different countries or update NZ data
+# Who's filling the gap?
 
 # load data
 data = pd.read_csv(
     "../data/processed/nz_migration_facet_data_202312.csv", parse_dates=["Month"]
 )
 
-BLUE = "#3D85F7"
-BLUE_LIGHT = "#5490FF"
-PINK = "#C32E5A"
-PINK_LIGHT = "#D34068"
+BLUE = '#2166ACFF'
+BLUE_LIGHT = '#4393C3FF'
+RED = '#B2182BFF'
+RED_LIGHT = '#D6604DFF'
 GREY40 = "#666666"
 GREY25 = "#404040"
 GREY20 = "#333333"
-# BACKGROUND = "#F5F4EF"
 CHARCOAL = "#333333"
 
 font = "Consolas"  # techy feel
-arrivals_colour_1 = PINK
-arrivals_colour_2 = PINK_LIGHT
-departures_colour_1 = BLUE
-arrivals_colour_2 = BLUE_LIGHT
-
-tick_colour = GREY40
-text_colour = CHARCOAL
-
 
 def single_plot(x, y1, y2, name, ax):
 
     ax.plot(x, y1, color=BLUE)
-    ax.plot(x, y2, color=PINK)
+    ax.plot(x, y2, color=RED)
 
     ax.fill_between(
         x, y1, y2, where=(y1 > y2), interpolate=True, color=BLUE_LIGHT, alpha=0.3
     )
 
     ax.fill_between(
-        x, y1, y2, where=(y1 <= y2), interpolate=True, color=PINK_LIGHT, alpha=0.3
+        x, y1, y2, where=(y1 <= y2), interpolate=True, color=RED_LIGHT, alpha=0.3
     )
 
-    # xticks = [2010, 2015, 2020]
-    # ax.set_xticks(xticks)
-    # ax.set_xticks([2012.5, 2017.5], minor=True)
-    # added a 'size' argument
-    # ax.set_xticklabels(xticks, color=GREY40, size=10)
-
-    ax.tick_params(axis="x", colors=GREY40)
+    ax.tick_params(axis="x", colors=GREY40, size=10)
 
     # yticks = [0, 10, 20]
     # ax.set_yticks(yticks)
@@ -116,7 +99,7 @@ for i, name in enumerate(NAMES):
     DEPARTURES = df_subset["departures_sum"].values
 
     # Plot it using the single_plot function
-    single_plot(MONTH, ARRIVALS, DEPARTURES, name, ax)
+    single_plot(MONTH, DEPARTURES, ARRIVALS, name, ax)
 
 # Remove any unused subplots
 for j in range(len(NAMES), len(axes_flat)):
