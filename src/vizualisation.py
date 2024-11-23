@@ -19,6 +19,9 @@ import matplotlib.pyplot as plt
 # Annotations
 # try different countries or update NZ data
 
+# load data
+data = pd.read_csv("../data/processed/nz_migration_facet_data_202312.csv")
+
 BLUE = "#3D85F7"
 BLUE_LIGHT = "#5490FF"
 PINK = "#C32E5A"
@@ -83,7 +86,7 @@ def single_plot(x, y1, y2, name, ax):
     # added a 'size' argument
     ax.set_title(name, weight="bold", size=9, color=CHARCOAL)
     
-df_plot=df[['Month','Citizenship','arrivals_sum','departures_sum']]
+df_plot=data[['Month','Citizenship','arrivals_sum','departures_sum']]
 
 NROW = 3
 NCOL = 3
