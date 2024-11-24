@@ -218,3 +218,20 @@ df['Citizenship'] = df['Citizenship'].replace({
 
 # save df to csv
 df.to_csv("../data/processed/nz_migration_facet_data_202312.csv", index=False)
+
+
+## Data for anmiation plot
+
+housing_data = pd.read_csv("../data/raw/homeownership_state_20241124.csv",  index_col=0, parse_dates=True)
+
+housing_data.index = housing_data.index.to_period('Y')
+
+# Convert the DataFrame from wide to long format
+df_long = housing_data.reset_index().melt(id_vars='index', var_name='state', value_name='home_ownership')
+
+# Rename the 'index' column to 'year'
+df_long.rename(columns={'index': 'year'}, inplace=True)
+
+df_long=df_long[df_long['year'].isin([1984, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2023])].copy()
+
+df_long.to_csv("../data/processed/homeownership_state_processed_20241124.csv", index=False)
