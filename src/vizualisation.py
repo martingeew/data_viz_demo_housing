@@ -121,7 +121,7 @@ handles = [
 # Add legend for the lines
 fig.legend(
     handles=handles,
-    loc=(0.75, 0.95), # This coord is bottom-left corner
+    loc=(0.77, 0.92), # This coord is bottom-left corner
     ncol=2,           # 1 row, 2 columns layout
     columnspacing=1,  # Space between columns
     handlelength=1.2, # Line length
@@ -135,7 +135,7 @@ inflow = patches.Patch(facecolor=RED_LIGHT, alpha=0.3, label="Net inflow")
 
 fig.legend(
     handles=[outflow, inflow],
-    loc=(0.75, 0.92), # This coord is top-right corner
+    loc=(0.77, 0.89), # This coord is top-right corner
     ncol=2,          # 1 row, 2 columns layout
     columnspacing=1, # Space between columns
     handlelength=2,  # Area length
@@ -145,18 +145,42 @@ fig.legend(
 
 # Title
 fig.text(
-    s="Who are filling the gaps in migration",
+    s="Which migrants are replacing the loss of New Zealand citizens?",
     x=0.05,
-    y=0.98,
+    y=1.025,
     color=CHARCOAL,
-    fontsize=26,
+    fontsize=24,
+    font=font,
+    ha="left",
+    va="top",
+    fontweight="bold"
+)
+
+# subtitle
+fig.text(
+    s="Long-term migration in New Zealand by citizenship\n(12-month rolling sum, top 9)",
+    x=0.05,
+    y=0.97,
+    color=CHARCOAL,
+    fontsize=17,
     font=font,
     ha="left",
     va="top",
 )
 
+# Caption
+fig.text(
+    s="Source: Statistics NZ\nautonomousecon.substack.com",
+    x=0.98,
+    y=-0.05,
+    color=CHARCOAL,
+    fontsize=11,
+    font=font,
+    ha="right",
+    va="baseline",
+)
+
 # Adjust layout and show the plot
 plt.tight_layout()
-plt.subplots_adjust(top=0.85)
-# fig.suptitle("Arrivals vs Departures for Different Countries")
+plt.subplots_adjust(top=0.85, bottom=0.025)
 plt.show()
