@@ -1,9 +1,8 @@
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
-from pypalettes import load_cmap
 import matplotlib.patches as mpatches
-from drawarrow import fig_arrow, ax_arrow
+from drawarrow import fig_arrow
 from highlight_text import fig_text, ax_text
 from pyfonts import load_font
 
@@ -41,7 +40,7 @@ def annotate_states(geo_df, ax, value_col, color_text, other_font, other_bold_fo
 
         # Set annotation text format based on state condition
         if state in ["NC", "VA", "TN", "KY", "NY", "HI"]:
-            text = f"<{state.upper()}>:{rate:.1f}"
+            text = f"<{state.upper()}>: {rate:.1f}"
         else:
             text = f"<{state.upper()}>\n{rate:.1f}"
 
@@ -85,7 +84,7 @@ def annotate_state_with_arrows(
     - text_y: float, y-coordinate for text placement.
     """
     # Define arrow properties
-    arrow_props = dict(width=0.5, head_width=2, head_length=4, color="black")
+    arrow_props = dict(width=0.5, head_width=2, head_length=4, color="#666666", fill_head=False)
 
     # Retrieve the value to annotate
     state_value = data.loc[data["STUSPS"] == state_code, column_name].values[0]
@@ -181,6 +180,7 @@ adjustments = {
     "MI": (+0.5, 0),
     "FL": (+0.75, 0),
     "WV": (-0.13, -0.2),
+    "KY": (0, -0.2),
 }
 
 # Define custom colors for each bin
@@ -330,7 +330,7 @@ annotate_state_with_arrows(
     state_code="DE",
     column_name=column_to_plot,
     tail_position=(0.83, 0.50),
-    head_position=(0.77, 0.565),
+    head_position=(0.7675, 0.565),
     text_x=0.83,
     text_y=0.49,
     radius=0.35,
@@ -416,7 +416,7 @@ fig.legend(
     loc="lower center",
     bbox_to_anchor=(
         0.5,
-        0.02,
+        0.79,
     ),  # Position the legend at the bottom center of the figure
     ncol=len(color_mapping),  # Arrange items in a single row
     frameon=False,
@@ -424,8 +424,8 @@ fig.legend(
 
 # title
 fig_text(
-    s="Home Ownership Rate by State",
-    x=0.15,
+    s="Home Ownership Rate by State: 1984",
+    x=0.18,
     y=0.9,
     color=text_color,
     fontsize=24,
@@ -448,11 +448,11 @@ fig_text(
 #     ax=ax,
 # )
 
-# credit
+# caption
 fig_text(
     s="Source: U.S. Census Bureau",
     x=0.93,
-    y=0.01,
+    y=0.025,
     color=text_color,
     fontsize=8,
     font=other_font,
@@ -461,11 +461,11 @@ fig_text(
     ax=ax,
 )
 
-# credit
+# caption
 fig_text(
     s="autonomousecon.substack.com",
     x=0.93,
-    y=0.03,
+    y=0.045,
     color=text_color,
     fontsize=8,
     font=other_font,
@@ -476,5 +476,5 @@ fig_text(
 
 # Adjust plot layout
 plt.subplots_adjust(hspace=0.04)
-plt.savefig("employment_map", dpi=300, bbox_inches="tight")
+plt.savefig("home_ownership_map", dpi=300, bbox_inches="tight")
 plt.show()
