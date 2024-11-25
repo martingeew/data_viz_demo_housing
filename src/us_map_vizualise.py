@@ -189,6 +189,15 @@ adjustments = {
     "FL": (+0.75, 0),
     "WV": (-0.13, -0.2),
     "KY": (0, -0.2),
+    "NJ": (+7.5, -3.7),
+    "DE": (+6.5, -4.9),
+    "MD": (+2, -6.5),
+    "VT": (-5.4, +1.6),
+    "NH": (-0.8, +4),
+    "MA": (+5, +1),
+    "CT": (+6.6, -2.5),
+    "RI": (+5.75, -1),
+    "DC": (+4.3, -2.6),
 }
 
 # Define custom colors for each bin
@@ -196,18 +205,53 @@ labels = ["35-45%", "45-55%", "55-65%", "65-75%", "75%+"]
 colors = ["#D6604DFF", "#F4A582FF", "#FDDBC7FF", "#92C5DEFF", "#4393C3FF"]
 color_mapping = dict(zip(labels, colors))
 
-# States where we need annotations with arrows
-outside_state_codes = [
-    "NJ",
-    "DE",
-    "DC",
-    "MD",
-    "VT",
-    "NH",
-    "MA",
-    "CT",
-    "RI",
-]
+# List of state codes to annotate
+state_codes_arrows = ["MA", "RI", "CT", "NJ", "DE", "MD", "VT", "NH", "DC"]
+
+# Define arrow parameters for each state
+arrow_parameters = {
+    "MA": {
+        "tail_position": (0.853, 0.65),
+        "head_position": (0.815, 0.63),
+        "radius": 0.2,
+    },
+    "RI": {
+        "tail_position": (0.863, 0.6),
+        "head_position": (0.815, 0.62),
+        "radius": -0.18,
+    },
+    "NJ": {
+        "tail_position": (0.86, 0.525),
+        "head_position": (0.775, 0.58),
+        "radius": 0.3,
+    },
+    "CT": {"tail_position": (0.86, 0.57), "head_position": (0.8, 0.62), "radius": -0.2},
+    "DE": {
+        "tail_position": (0.843, 0.48),
+        "head_position": (0.7675, 0.565),
+        "radius": 0.5,
+    },
+    "MD": {
+        "tail_position": (0.77, 0.45),
+        "head_position": (0.76, 0.56),
+        "radius": 0.23,
+    },
+    "VT": {
+        "tail_position": (0.76, 0.70),
+        "head_position": (0.803, 0.67),
+        "radius": -0.2,
+    },
+    "NH": {
+        "tail_position": (0.8, 0.73),
+        "head_position": (0.815, 0.65),
+        "radius": -0.25,
+    },
+    "DC": {
+        "tail_position": (0.8, 0.525),
+        "head_position": (0.75, 0.565),
+        "radius": 0.25,
+    },
+}
 
 # Load employment data
 plot_data = pd.read_csv("../data/processed/homeownership_state_processed_20241124.csv")
@@ -216,6 +260,15 @@ plot_data = plot_data[plot_data["year"] == 1984]
 # Read the shapefile
 shapefile_path = "../data/raw/us_map_data/tl_2023_us_state.shp"
 gdf = gpd.read_file(shapefile_path)
+
+# Project the data to EPSG:5070 and calculate centroids.
+# A projection is a way to represent the 3D surface of the Earth on a 2D map.
+# A centroid is the geometric center or “average” point of a shape.
+data_projected = gdf.to_crs(epsg=5070)
+data_projected["centroid"] = data_projected.geometry.centroid
+
+# Project centroids back to original CRS
+gdf["centroid"] = data_projected["centroid"].to_crs(gdf.crs)
 
 # Merge data
 data = gdf.merge(plot_data, how="inner", left_on="STUSPS", right_on="state")
@@ -233,15 +286,6 @@ print(states_not_in_intersect)
 
 # Define column for plotting
 column_to_plot = "home_ownership"
-
-# Project the data to EPSG:5070 and calculate centroids.
-# A projection is a way to represent the 3D surface of the Earth on a 2D map.
-# A centroid is the geometric center or “average” point of a shape.
-data_projected = data.to_crs(epsg=5070)
-data_projected["centroid"] = data_projected.geometry.centroid
-
-# Project centroids back to original CRS
-data["centroid"] = data_projected["centroid"].to_crs(data.crs)
 
 # Add a binned column based on specified ranges
 data["binned"] = pd.cut(
@@ -279,48 +323,8 @@ plot_with_legend(alaska, ax_alaska, xlim=(-200, -100), ylim=(50, 73))
 ax_hawaii = plt.subplot2grid((2, 2), (1, 1), fig=fig)
 plot_with_legend(hawaii, ax_hawaii, xlim=(-162, -152), ylim=(18, 24))
 
-# List of state codes to annotate
-state_codes = ["MA", "RI", "CT", "NJ", "DE", "MD", "VT", "NH"]
-
-# Define arrow parameters for each state
-arrow_parameters = {
-    "MA": {
-        "tail_position": (0.853, 0.65),
-        "head_position": (0.815, 0.63),
-        "radius": 0.2,
-    },
-    "RI": {
-        "tail_position": (0.863, 0.6),
-        "head_position": (0.815, 0.62),
-        "radius": 0.18,
-    },
-    "NJ": {
-        "tail_position": (0.86, 0.525),
-        "head_position": (0.775, 0.58),
-        "radius": 0.4,
-    },
-    "NY": {
-        "tail_position": (0.870, 0.67),
-        "head_position": (0.840, 0.64),
-        "radius": 0.25,
-    },
-    "CT": {"tail_position": (0.86, 0.57), "head_position": (0.8, 0.62), "radius": -0.2},
-    "DE": {
-        "tail_position": (0.83, 0.50),
-        "head_position": (0.7675, 0.565),
-        "radius": 0.35,
-    },
-    "MD": {"tail_position": (0.79, 0.48), "head_position": (0.76, 0.56), "radius": 0.3},
-    "VT": {"tail_position": (0.76, 0.70), "head_position": (0.8, 0.67), "radius": -0.2},
-    "NH": {
-        "tail_position": (0.8, 0.73),
-        "head_position": (0.815, 0.65),
-        "radius": -0.1,
-    },
-}
-
 # Loop through state codes and annotate each one
-for state_code in state_codes:
+for state_code in state_codes_arrows:
     params = arrow_parameters.get(state_code, {})
     annotate_state_with_arrows(
         data,
@@ -336,7 +340,7 @@ for state_code in state_codes:
 
 # Annotate the states
 annotate_states(
-    contiguous_us[~contiguous_us["STUSPS"].isin(outside_state_codes)],
+    contiguous_us[~contiguous_us["STUSPS"].isin(state_codes_arrows)],
     ax_main,
     value_col=column_to_plot,
     color_text=text_color,
