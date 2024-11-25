@@ -143,29 +143,6 @@ def plot_with_legend(data, ax, xlim, ylim):
     ax.set_ylim(ylim)
 
 
-def set_background_color(ax):
-    """
-    Sets the background color of a given subplot.
-
-    Parameters:
-    - ax: Matplotlib axis object on which to set the background color.
-    - color: String, color in hex format to set as the background. Default is slight off-white (#f5f5f5).
-    """
-    # Turn the axis back on, but this also restores labels and ticks
-    ax.set_axis_on()
-
-    # Remove the x and y axis ticks while keeping the spines
-    ax.set_xticks([])
-    ax.set_yticks([])
-    # ax.set_facecolor(color)
-
-    # Remove the spines
-    for spine in ax.spines.values():
-        spine.set_visible(True)
-        spine.set_linestyle((0, (1, 3)))  # Dotted line pattern
-        spine.set_color("#333333")  # Light black color
-
-
 # Load the fonts
 font = load_font(
     "https://github.com/dharmatype/Bebas-Neue/blob/master/fonts/BebasNeue(2018)ByDhamraType/ttf/BebasNeue-Regular.ttf?raw=true"
@@ -367,9 +344,6 @@ annotate_states(
 for ax in fig.axes:
     ax.set_axis_off()
 
-set_background_color(ax_hawaii)
-set_background_color(ax_alaska)
-
 legend_handles = [
     mpatches.Patch(color=color, label=label) for label, color in color_mapping.items()
 ]
@@ -387,7 +361,7 @@ fig.legend(
 
 # title
 fig_text(
-    s="Home Ownership Rate by State: 1984",
+    s="Home Ownership Rate by State",
     x=0.18,
     y=0.9,
     color=text_color,
@@ -398,11 +372,31 @@ fig_text(
     ax=ax,
 )
 
+# Year
+ax_text(
+    s="1984",
+    x=-120,
+    y=29,
+    color=text_color,
+    fontsize=32,
+    font=other_font,
+    ha="left",
+    va="top",
+    ax=ax_main,
+    bbox=dict(
+        boxstyle="round,pad=0.3",
+        edgecolor="black",
+        facecolor="white",
+        linestyle="dotted",
+        alpha=0.8,
+    ),
+)
+
 # caption
 fig_text(
     s="Source: U.S. Census Bureau",
     x=0.93,
-    y=0.025,
+    y=0.035,
     color=text_color,
     fontsize=8,
     font=other_font,
@@ -415,7 +409,7 @@ fig_text(
 fig_text(
     s="autonomousecon.substack.com",
     x=0.93,
-    y=0.045,
+    y=0.055,
     color=text_color,
     fontsize=8,
     font=other_font,
