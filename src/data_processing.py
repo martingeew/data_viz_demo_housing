@@ -1,17 +1,17 @@
 import pandas as pd
 
-# Load employment data
+# Load public data
 data = pd.read_csv("https://github.com/jgleeson/PublicHouse/raw/main/dataset.csv")
 
-### Data wrangling
+################################################################################
+# Dataset for lollipop plot
 
 # Create city dataset - Add city states
 # Choose a common year across countries or interpolate if no data
 # add persons per dwelling
 # add Auckland
 
-df_city = data[data["area_level"].isin(["city-region", "city-state"])].copy()
-
+# df_city = data[data["area_level"].isin(["city-region", "city-state"])].copy()
 
 df_country = data[
     data["area_level"].isin(["country"])
@@ -73,59 +73,10 @@ summary_df = merged_df[
 
 summary_df = summary_df.sort_values(by="pop_per_dwelling_last")
 
-# The horizontal plot is made using the hline function
-import matplotlib.pyplot as plt
+summary_df.to_csv("../data/processed/housing_data_202411.csv", index=False)
 
-df = summary_df
-my_range = range(1, len(df.index) + 1)
-plt.hlines(
-    y=my_range,
-    xmin=df["pop_per_dwelling_min"],
-    xmax=df["pop_per_dwelling_max"],
-    color="grey",
-    alpha=0.4,
-    zorder=1,
-)
-plt.scatter(
-    df["pop_per_dwelling_min"],
-    my_range,
-    color="skyblue",
-    alpha=1,
-    label="pop_per_dwelling_min",
-)
-plt.scatter(
-    df["pop_per_dwelling_max"],
-    my_range,
-    color="lightgreen",
-    alpha=1,
-    label="pop_per_dwelling_max",
-)
-plt.scatter(
-    df["pop_per_dwelling_last"],
-    my_range,
-    color="red",
-    alpha=1,
-    label="pop_per_dwelling_last",
-)
-plt.legend()
-
-# Add title and axis names
-plt.yticks(my_range, df["area_name"])
-plt.title("Comparison of the value 1 and the value 2", loc="left")
-plt.xlabel("Value of the variables")
-
-# Show the graph
-plt.show()
-
-# # Sanity checks
-# merged_df.groupby('area_name')['year'].min()
-# merged_df.groupby('area_name')['year'].max()
-# merged_df['year'].min()
-# merged_df.groupby('area_name').size()
-merged_df[merged_df["area_name"] == "South Korea"]
-
-# data needed for facet plot of migration by citizenship in NZ or internationally long form: index: [country, year], columns: ['net', 'departures','arrivals]
-
+################################################################################
+# data needed for facet plot of migration by citizenship 
 
 migration_data = pd.read_csv("../data/raw/df_citizenship_direction_202312.csv")
 
@@ -220,7 +171,8 @@ df['Citizenship'] = df['Citizenship'].replace({
 df.to_csv("../data/processed/nz_migration_facet_data_202312.csv", index=False)
 
 
-## Data for anmiation plot
+################################################################################
+# Data for anmiation plot
 
 housing_data = pd.read_csv("../data/raw/homeownership_state_20241124.csv",  index_col=0, parse_dates=True)
 
@@ -231,6 +183,8 @@ df_long = housing_data.reset_index().melt(id_vars='index', var_name='state', val
 
 # Rename the 'index' column to 'year'
 df_long.rename(columns={'index': 'year'}, inplace=True)
+
+df_long['year'] = df_long['year'].dt.year
 
 df_long=df_long[df_long['year'].isin([1984, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2023])].copy()
 
