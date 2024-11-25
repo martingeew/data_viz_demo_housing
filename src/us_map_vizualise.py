@@ -84,7 +84,9 @@ def annotate_state_with_arrows(
     - text_y: float, y-coordinate for text placement.
     """
     # Define arrow properties
-    arrow_props = dict(width=0.5, head_width=2, head_length=4, color="#666666", fill_head=False)
+    arrow_props = dict(
+        width=0.5, head_width=2, head_length=4, color="#666666", fill_head=False
+    )
 
     # Retrieve the value to annotate
     state_value = data.loc[data["STUSPS"] == state_code, column_name].values[0]
@@ -434,19 +436,6 @@ fig_text(
     va="top",
     ax=ax,
 )
-
-# # subtitle
-# fig_text(
-#     s="Total nonfarm employemnt, annual percent change (Sep 2024)",
-#     x=0.15,
-#     y=0.85,
-#     color=text_color,
-#     fontsize=12,
-#     font=other_font,
-#     ha="left",
-#     va="top",
-#     ax=ax,
-# )
 
 # caption
 fig_text(
