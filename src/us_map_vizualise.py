@@ -61,14 +61,14 @@ def annotate_states(geo_df, ax, value_col, color_text, other_font, other_bold_fo
 
 def annotate_state_with_arrows(
     data,
-    fig,
+    ax,
     state_code,
     column_name,
     tail_position,
     head_position,
-    text_x,
-    text_y,
     radius,
+    text_color,
+    other_font,
 ):
     """
     Annotates a state on a plot with an arrow and text label.
@@ -80,16 +80,11 @@ def annotate_state_with_arrows(
     - column_name: str, the column in the data containing the value to plot.
     - tail_position: tuple, (x, y) starting position of the arrow.
     - head_position: tuple, (x, y) end position of the arrow head.
-    - text_x: float, x-coordinate for text placement.
-    - text_y: float, y-coordinate for text placement.
     """
     # Define arrow properties
     arrow_props = dict(
         width=0.5, head_width=2, head_length=4, color="#666666", fill_head=False
     )
-
-    # Retrieve the value to annotate
-    state_value = data.loc[data["STUSPS"] == state_code, column_name].values[0]
 
     # Draw the arrow
     fig_arrow(
@@ -99,18 +94,29 @@ def annotate_state_with_arrows(
         **arrow_props,
     )
 
+    # Get the centroid coordinates and rate for each state
+    centroid = data.loc[data["STUSPS"] == state_code, "centroid"].values[0]
+    x, y = centroid.coords[0]
+    state_value = data.loc[data["STUSPS"] == state_code, column_name].values[0]
+    # Make small adjustments to annotation locations
+    try:
+        x += adjustments[state_code][0]
+        y += adjustments[state_code][1]
+    except KeyError:
+        pass
+
     # Add the text annotation
-    fig_text(
+    ax_text(
         s=f"<{state_code}>: {state_value:.1f}",
-        x=text_x,
-        y=text_y,
+        x=x,
+        y=y,
         highlight_textprops=[{"font": other_bold_font}],
         color=text_color,
         fontsize=9,
         font=other_font,
         ha="center",
         va="center",
-        fig=fig,
+        ax=ax,
     )
 
 
@@ -273,109 +279,60 @@ plot_with_legend(alaska, ax_alaska, xlim=(-200, -100), ylim=(50, 73))
 ax_hawaii = plt.subplot2grid((2, 2), (1, 1), fig=fig)
 plot_with_legend(hawaii, ax_hawaii, xlim=(-162, -152), ylim=(18, 24))
 
-# Annotate states with arrows
-annotate_state_with_arrows(
-    data,
-    fig,
-    state_code="MA",
-    column_name=column_to_plot,
-    tail_position=(0.853, 0.65),
-    head_position=(0.815, 0.63),
-    text_x=0.88,
-    text_y=0.65,
-    radius=0.2,
-)
+# List of state codes to annotate
+state_codes = ["MA", "RI", "CT", "NJ", "DE", "MD", "VT", "NH"]
 
-# Annotate states with arrows
-annotate_state_with_arrows(
-    data,
-    fig,
-    state_code="RI",
-    column_name=column_to_plot,
-    tail_position=(0.863, 0.6),
-    head_position=(0.815, 0.62),
-    text_x=0.88,
-    text_y=0.6,
-    radius=-0.18,
-)
+# Define arrow parameters for each state
+arrow_parameters = {
+    "MA": {
+        "tail_position": (0.853, 0.65),
+        "head_position": (0.815, 0.63),
+        "radius": 0.2,
+    },
+    "RI": {
+        "tail_position": (0.863, 0.6),
+        "head_position": (0.815, 0.62),
+        "radius": 0.18,
+    },
+    "NJ": {
+        "tail_position": (0.86, 0.525),
+        "head_position": (0.775, 0.58),
+        "radius": 0.4,
+    },
+    "NY": {
+        "tail_position": (0.870, 0.67),
+        "head_position": (0.840, 0.64),
+        "radius": 0.25,
+    },
+    "CT": {"tail_position": (0.86, 0.57), "head_position": (0.8, 0.62), "radius": -0.2},
+    "DE": {
+        "tail_position": (0.83, 0.50),
+        "head_position": (0.7675, 0.565),
+        "radius": 0.35,
+    },
+    "MD": {"tail_position": (0.79, 0.48), "head_position": (0.76, 0.56), "radius": 0.3},
+    "VT": {"tail_position": (0.76, 0.70), "head_position": (0.8, 0.67), "radius": -0.2},
+    "NH": {
+        "tail_position": (0.8, 0.73),
+        "head_position": (0.815, 0.65),
+        "radius": -0.1,
+    },
+}
 
-# Annotate states with arrows
-annotate_state_with_arrows(
-    data,
-    fig,
-    state_code="CT",
-    column_name=column_to_plot,
-    tail_position=(0.86, 0.57),
-    head_position=(0.8, 0.62),
-    text_x=0.88,
-    text_y=0.57,
-    radius=-0.2,
-)
-
-# Annotate states with arrows
-annotate_state_with_arrows(
-    data,
-    fig,
-    state_code="NJ",
-    column_name=column_to_plot,
-    tail_position=(0.86, 0.525),
-    head_position=(0.775, 0.58),
-    text_x=0.87,
-    text_y=0.515,
-    radius=0.4,
-)
-
-# Annotate states with arrows
-annotate_state_with_arrows(
-    data,
-    fig,
-    state_code="DE",
-    column_name=column_to_plot,
-    tail_position=(0.83, 0.50),
-    head_position=(0.7675, 0.565),
-    text_x=0.83,
-    text_y=0.49,
-    radius=0.35,
-)
-
-# Annotate states with arrows
-annotate_state_with_arrows(
-    data,
-    fig,
-    state_code="MD",
-    column_name=column_to_plot,
-    tail_position=(0.79, 0.48),
-    head_position=(0.76, 0.56),
-    text_x=0.79,
-    text_y=0.47,
-    radius=0.3,
-)
-
-# Annotate states with arrows
-annotate_state_with_arrows(
-    data,
-    fig,
-    state_code="VT",
-    column_name=column_to_plot,
-    tail_position=(0.76, 0.70),
-    head_position=(0.8, 0.67),
-    text_x=0.74,
-    text_y=0.7,
-    radius=-0.2,
-)
-
-# Annotate states with arrows
-annotate_state_with_arrows(
-    data,
-    fig,
-    state_code="NH",
-    column_name=column_to_plot,
-    tail_position=(0.8, 0.73),
-    head_position=(0.815, 0.65),
-    text_x=0.78,
-    text_y=0.74,
-    radius=-0.1,
-)
+# Loop through state codes and annotate each one
+for state_code in state_codes:
+    params = arrow_parameters.get(state_code, {})
+    annotate_state_with_arrows(
+        data,
+        ax=ax_main,
+        state_code=state_code,
+        column_name=column_to_plot,
+        tail_position=params.get("tail_position"),
+        head_position=params.get("head_position"),
+        radius=params.get("radius"),
+        text_color=text_color,
+        other_font=other_font,
+    )
 
 # Annotate the states
 annotate_states(
