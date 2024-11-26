@@ -9,21 +9,6 @@ from pyfonts import load_font
 from matplotlib.ticker import FuncFormatter
 import numpy as np
 
-
-### Facet plot
-
-### Main plot
-# Todo:
-# Make axes value in k
-# Fonts - choose a font and stick to it for the future (casual modern minimalist)
-# update NZ data
-# title: Who's filling the gap?
-
-# load data
-data = pd.read_csv(
-    "../data/processed/nz_migration_facet_data_202312.csv", parse_dates=["Month"]
-)
-
 ### Constants
 
 BLUE = "#2166ACFF"
@@ -34,8 +19,6 @@ GREY40 = "#666666"
 GREY25 = "#404040"
 GREY20 = "#333333"
 CHARCOAL = "#333333"
-
-# font = "Consolas"  # techy feel
 
 # Load the fonts
 font = load_font(
@@ -49,6 +32,15 @@ other_bold_font = load_font(
 )
 
 
+# Custom function to convert y-tick values to 'k' format
+def thousands_formatter(x, pos):
+    if x >= 1000:
+        return f"{int(x / 1000)}k"
+    else:
+        return f"{int(x)}"
+
+
+# Function for a single plot
 def single_plot(x, y1, y2, name, ax):
 
     ax.plot(x, y1, color=BLUE)
@@ -63,14 +55,6 @@ def single_plot(x, y1, y2, name, ax):
     )
 
     ax.tick_params(axis="x", colors=GREY40, size=10)
-
-    # yticks = [0, 10, 20]
-    # ax.set_yticks(yticks)
-    # ax.set_yticks([5, 15, 25], minor=True)
-    # added a 'size' argument
-    # ax.set_yticklabels(yticks, color=GREY40, size=10)
-    # ax.set_ylim((-1, 26))
-
     ax.tick_params(axis="y", colors=GREY40)
 
     ax.grid(which="minor", lw=0.4, alpha=0.4)
@@ -78,13 +62,6 @@ def single_plot(x, y1, y2, name, ax):
 
     ax.yaxis.set_tick_params(which="both", length=0)
     ax.xaxis.set_tick_params(which="both", length=0)
-
-    # Custom function to convert y-tick values to 'k' format
-    def thousands_formatter(x, pos):
-        if x >= 1000:
-            return f"{int(x / 1000)}k"
-        else:
-            return f"{int(x)}"
 
     # Customize the start, end, and frequency of the horizontal grid lines
     y_start = 0.0
@@ -94,7 +71,6 @@ def single_plot(x, y1, y2, name, ax):
     y_ticks = np.round(y_ticks).astype(int)
     # Set the y-ticks
     ax.set_yticks(y_ticks)
-
     # Apply the custom formatter to y-axis
     ax.yaxis.set_major_formatter(FuncFormatter(thousands_formatter))
 
@@ -102,11 +78,15 @@ def single_plot(x, y1, y2, name, ax):
     ax.spines["bottom"].set_color("none")
     ax.spines["right"].set_color("none")
     ax.spines["top"].set_color("none")
-    # added a 'size' argument
     ax.set_title(
         name, weight="bold", size=12, color=CHARCOAL, font=other_bold_font, fontsize=12
     )
 
+
+# load data
+data = pd.read_csv(
+    "../data/processed/nz_migration_facet_data_202312.csv", parse_dates=["Month"]
+)
 
 NROW = 3
 NCOL = 3
@@ -115,9 +95,6 @@ NAMES = ["New Zealand"] + list(
     .sort_values(by="net_sum", ascending=False)["Citizenship"]
     .unique()
 )
-
-### Plot
-
 df_plot = data[["Month", "Citizenship", "arrivals_sum", "departures_sum"]]
 
 # Create the figure and axes for subplots
