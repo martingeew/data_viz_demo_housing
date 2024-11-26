@@ -186,6 +186,10 @@ df_long.rename(columns={'index': 'year'}, inplace=True)
 
 df_long['year'] = df_long['year'].dt.year
 
+df_long_full=df_long.copy()
+
 df_long=df_long[df_long['year'].isin([1984, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2023])].copy()
 
 df_long.to_csv("../data/processed/homeownership_state_processed_20241124.csv", index=False)
+
+df_long_full.to_csv("../data/processed/homeownership_state_processed_full_20241124.csv", index=False)
