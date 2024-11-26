@@ -47,7 +47,6 @@ other_font = load_font(
 other_bold_font = load_font(
     "https://github.com/google/fonts/blob/main/ofl/cabincondensed/CabinCondensed-Medium.ttf?raw=true"
 )
-text_color = "black"
 
 
 def single_plot(x, y1, y2, name, ax):
