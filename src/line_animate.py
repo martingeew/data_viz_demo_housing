@@ -8,7 +8,8 @@ from matplotlib.animation import FuncAnimation
 # parameters
 background_color = '#282a36'
 text_color = 'white'
-line_color = "#B6E880"
+line_color_1 = "#B6E880"
+line_color_2="#636EFA"
 dpi = 300
 
 # Load the fonts
@@ -25,8 +26,10 @@ other_bold_font = load_font(
 # Load plot data
 plot_data = pd.read_csv("../data/processed/homeownership_state_processed_full_20241124.csv")
 
-df=plot_data[plot_data["state"].isin(['TX'])]
-df=df[['year','home_ownership']].copy()
+df=plot_data[plot_data["state"].isin(['NY','CA'])]
+df = df.pivot(index='year', columns='state', values='home_ownership').reset_index()
+df.columns.name = None
+df.rename(columns={'CA': 'home_ownership_ca', 'NY': 'home_ownership_ny'}, inplace=True)
 df.set_index('year', inplace=True)
 
 # Setting up the plot
@@ -47,15 +50,18 @@ def update(frame):
     subset_df = df.iloc[:frame]
     ax.clear()
 
-
     # create the line chart
-    ax.plot(subset_df.index, subset_df['home_ownership'], color=line_color)
-    ax.scatter(subset_df.index[-1], subset_df['home_ownership'].values[-1], color=line_color, s=100)
+    ax.plot(subset_df.index, subset_df['home_ownership_ca'], color=line_color_1)
+    ax.scatter(subset_df.index[-1], subset_df['home_ownership_ca'].values[-1], color=line_color_1, s=100)
+    
+    # create the line chart
+    ax.plot(subset_df.index, subset_df['home_ownership_ny'], color=line_color_2)
+    ax.scatter(subset_df.index[-1], subset_df['home_ownership_ny'].values[-1], color=line_color_2, s=100)
     
     # custom axes
     ax.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
-    y_max = df.iloc[:frame+1].sum(axis=1).max()
-    y_min=55
+    y_max = max(subset_df['home_ownership_ca'].max(), subset_df['home_ownership_ny'].max())
+    y_min=50
     ax.set_ylim(y_min, y_max*1.05)
     ax.spines[['top', 'right', 'bottom']].set_visible(False)
     ax.set_xlim(1980, 2023)
@@ -65,18 +71,29 @@ def update(frame):
     # create annotation next to the last point
     ax.text(
         x=subset_df.index[-1] + 0.5,  # Slightly offset the x position to avoid overlap
-        y=subset_df['home_ownership'].values[-1],
-        s=f"{subset_df['home_ownership'].values[-1]:.0f}%",
+        y=subset_df['home_ownership_ca'].values[-1],
+        s="CA",
         fontsize=14,
         verticalalignment='center',
         horizontalalignment='left',
-        color=line_color
+        color=line_color_1
+    )
+    
+    # create annotation next to the last point
+    ax.text(
+        x=subset_df.index[-1] + 0.5,  # Slightly offset the x position to avoid overlap
+        y=subset_df['home_ownership_ny'].values[-1],
+        s="NY",
+        fontsize=14,
+        verticalalignment='center',
+        horizontalalignment='left',
+        color=line_color_2
     )
 
     # date in the background
     year = df.index[frame]
     fig_text(
-        0.7, 0.3,
+        0.15, 0.87,
         '1984 - ' + str(round(year)),
         ha='left', va='top',
         fontsize=30,
@@ -91,7 +108,7 @@ def update(frame):
     fig.text(
         s="Home Ownership Rate (%): California vs New York",
         x=0.13,
-        y=1,
+        y=0.95,
         color=text_color,
         fontsize=20,
         font=font,
@@ -104,7 +121,7 @@ def update(frame):
     fig.text(
         s="Source: U.S. Census Bureau\nautonomousecon.substack.com",
         x=0.98,
-        y=0.05,
+        y=0.02,
         color=text_color,
         fontsize=12,
         font=other_font,
