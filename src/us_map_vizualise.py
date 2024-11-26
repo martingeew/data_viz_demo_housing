@@ -232,7 +232,7 @@ arrow_parameters = {
 
 # Load employment data
 plot_data = pd.read_csv("../data/processed/homeownership_state_processed_20241124.csv")
-plot_data = plot_data[plot_data["year"] == 1984]
+plot_data = plot_data[plot_data["year"] == 2023]
 
 # Read the shapefile
 shapefile_path = "../data/raw/us_map_data/tl_2023_us_state.shp"
@@ -357,11 +357,12 @@ fig.legend(
     ),  # Position the legend at the bottom center of the figure
     ncol=len(color_mapping),  # Arrange items in a single row
     frameon=False,
+    prop=other_font
 )
 
 # title
 fig_text(
-    s="Home Ownership Rate by State",
+    s="Home Ownership Rate by State: 2023",
     x=0.18,
     y=0.9,
     color=text_color,
@@ -370,26 +371,6 @@ fig_text(
     ha="left",
     va="top",
     ax=ax,
-)
-
-# Year
-ax_text(
-    s="1984",
-    x=-120,
-    y=29,
-    color=text_color,
-    fontsize=32,
-    font=other_font,
-    ha="left",
-    va="top",
-    ax=ax_main,
-    bbox=dict(
-        boxstyle="round,pad=0.3",
-        edgecolor="black",
-        facecolor="white",
-        linestyle="dotted",
-        alpha=0.8,
-    ),
 )
 
 # caption
@@ -420,5 +401,5 @@ fig_text(
 
 # Adjust plot layout
 plt.subplots_adjust(hspace=0.04)
-plt.savefig("home_ownership_map", dpi=300, bbox_inches="tight")
+plt.savefig("../reports/home_ownership_map_2023", dpi=300, bbox_inches="tight")
 plt.show()
