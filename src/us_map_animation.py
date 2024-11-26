@@ -62,14 +62,14 @@ def annotate_states(geo_df, ax, value_col, color_text, other_font, other_bold_fo
 
 def annotate_state_with_arrows(
     data,
-    fig,
+    ax,
     state_code,
     column_name,
     tail_position,
     head_position,
-    text_x,
-    text_y,
     radius,
+    text_color,
+    other_font,
 ):
     """
     Annotates a state on a plot with an arrow and text label.
@@ -81,16 +81,11 @@ def annotate_state_with_arrows(
     - column_name: str, the column in the data containing the value to plot.
     - tail_position: tuple, (x, y) starting position of the arrow.
     - head_position: tuple, (x, y) end position of the arrow head.
-    - text_x: float, x-coordinate for text placement.
-    - text_y: float, y-coordinate for text placement.
     """
     # Define arrow properties
     arrow_props = dict(
         width=0.5, head_width=2, head_length=4, color="#666666", fill_head=False
     )
-
-    # Retrieve the value to annotate
-    state_value = data.loc[data["STUSPS"] == state_code, column_name].values[0]
 
     # Draw the arrow
     fig_arrow(
@@ -100,18 +95,29 @@ def annotate_state_with_arrows(
         **arrow_props,
     )
 
+    # Get the centroid coordinates and rate for each state
+    centroid = data.loc[data["STUSPS"] == state_code, "centroid"].values[0]
+    x, y = centroid.coords[0]
+    state_value = data.loc[data["STUSPS"] == state_code, column_name].values[0]
+    # Make small adjustments to annotation locations
+    try:
+        x += adjustments[state_code][0]
+        y += adjustments[state_code][1]
+    except KeyError:
+        pass
+
     # Add the text annotation
-    fig_text(
+    ax_text(
         s=f"<{state_code}>: {state_value:.1f}",
-        x=text_x,
-        y=text_y,
+        x=x,
+        y=y,
         highlight_textprops=[{"font": other_bold_font}],
         color=text_color,
         fontsize=9,
         font=other_font,
         ha="center",
         va="center",
-        fig=fig,
+        ax=ax,
     )
 
 
@@ -138,29 +144,6 @@ def plot_with_legend(data, ax, xlim, ylim):
     ax.set_ylim(ylim)
 
 
-def set_background_color(ax):
-    """
-    Sets the background color of a given subplot.
-
-    Parameters:
-    - ax: Matplotlib axis object on which to set the background color.
-    - color: String, color in hex format to set as the background. Default is slight off-white (#f5f5f5).
-    """
-    # Turn the axis back on, but this also restores labels and ticks
-    ax.set_axis_on()
-
-    # Remove the x and y axis ticks while keeping the spines
-    ax.set_xticks([])
-    ax.set_yticks([])
-    # ax.set_facecolor(color)
-
-    # Remove the spines
-    for spine in ax.spines.values():
-        spine.set_visible(True)
-        spine.set_linestyle((0, (1, 3)))  # Dotted line pattern
-        spine.set_color("#333333")  # Light black color
-
-
 # Load the fonts
 font = load_font(
     "https://github.com/dharmatype/Bebas-Neue/blob/master/fonts/BebasNeue(2018)ByDhamraType/ttf/BebasNeue-Regular.ttf?raw=true"
@@ -184,6 +167,15 @@ adjustments = {
     "FL": (+0.75, 0),
     "WV": (-0.13, -0.2),
     "KY": (0, -0.2),
+    "NJ": (+7.5, -3.7),
+    "DE": (+6.5, -4.9),
+    "MD": (+2, -6.5),
+    "VT": (-5.4, +1.6),
+    "NH": (-0.8, +4),
+    "MA": (+5, +1),
+    "CT": (+6.6, -2.5),
+    "RI": (+5.75, -1),
+    "DC": (+4.3, -2.6),
 }
 
 # Define custom colors for each bin
@@ -191,18 +183,53 @@ labels = ["35-45%", "45-55%", "55-65%", "65-75%", "75%+"]
 colors = ["#D6604DFF", "#F4A582FF", "#FDDBC7FF", "#92C5DEFF", "#4393C3FF"]
 color_mapping = dict(zip(labels, colors))
 
-# States where we need annotations with arrows
-outside_state_codes = [
-    "NJ",
-    "DE",
-    "DC",
-    "MD",
-    "VT",
-    "NH",
-    "MA",
-    "CT",
-    "RI",
-]
+# List of state codes to annotate
+state_codes_arrows = ["MA", "RI", "CT", "NJ", "DE", "MD", "VT", "NH", "DC"]
+
+# Define arrow parameters for each state
+arrow_parameters = {
+    "MA": {
+        "tail_position": (0.853, 0.65),
+        "head_position": (0.815, 0.63),
+        "radius": 0.2,
+    },
+    "RI": {
+        "tail_position": (0.863, 0.6),
+        "head_position": (0.815, 0.62),
+        "radius": -0.18,
+    },
+    "NJ": {
+        "tail_position": (0.86, 0.525),
+        "head_position": (0.775, 0.58),
+        "radius": 0.3,
+    },
+    "CT": {"tail_position": (0.86, 0.57), "head_position": (0.8, 0.62), "radius": -0.2},
+    "DE": {
+        "tail_position": (0.843, 0.48),
+        "head_position": (0.7675, 0.565),
+        "radius": 0.5,
+    },
+    "MD": {
+        "tail_position": (0.77, 0.45),
+        "head_position": (0.76, 0.56),
+        "radius": 0.23,
+    },
+    "VT": {
+        "tail_position": (0.76, 0.70),
+        "head_position": (0.803, 0.67),
+        "radius": -0.2,
+    },
+    "NH": {
+        "tail_position": (0.8, 0.73),
+        "head_position": (0.815, 0.65),
+        "radius": -0.25,
+    },
+    "DC": {
+        "tail_position": (0.8, 0.525),
+        "head_position": (0.75, 0.565),
+        "radius": 0.25,
+    },
+}
 
 # Load plot data
 plot_data = pd.read_csv("../data/processed/homeownership_state_processed_20241124.csv")
@@ -213,11 +240,14 @@ plot_data=plot_data[plot_data["year"].isin([1984,2023])]
 shapefile_path = "../data/raw/us_map_data/tl_2023_us_state.shp"
 gdf = gpd.read_file(shapefile_path)
 
-# # Project the data to EPSG:5070 and calculate centroids.
-# # A projection is a way to represent the 3D surface of the Earth on a 2D map.
-# # A centroid is the geometric center or “average” point of a shape.
-# gdf_projected = gdf.to_crs(epsg=5070)
-# gdf_projected["centroid"] = gdf_projected.geometry.centroid
+# Project the data to EPSG:5070 and calculate centroids.
+# A projection is a way to represent the 3D surface of the Earth on a 2D map.
+# A centroid is the geometric center or “average” point of a shape.
+data_projected = gdf.to_crs(epsg=5070)
+data_projected["centroid"] = data_projected.geometry.centroid
+
+# Project centroids back to original CRS
+gdf["centroid"] = data_projected["centroid"].to_crs(gdf.crs)
 
 # Define column for plotting
 column_to_plot = "home_ownership"
@@ -242,12 +272,6 @@ def update(frame):
 
     # Merge data
     data = gdf.merge(current_data, how="inner", left_on="STUSPS", right_on="state")
-    
-    data_projected = data.to_crs(epsg=5070)
-    data_projected["centroid"] = data_projected.geometry.centroid
-
-    # Project centroids back to original CRS
-    data["centroid"] = data_projected["centroid"].to_crs(data.crs)
 
     # Add a binned column based on specified ranges
     data["binned"] = pd.cut(
@@ -273,113 +297,24 @@ def update(frame):
     ax_hawaii = plt.subplot2grid((2, 2), (1, 1), fig=fig)
     plot_with_legend(hawaii, ax_hawaii, xlim=(-162, -152), ylim=(18, 24))
 
-    # Annotate states with arrows
-    annotate_state_with_arrows(
-        data,
-        fig,
-        state_code="MA",
-        column_name=column_to_plot,
-        tail_position=(0.853, 0.65),
-        head_position=(0.815, 0.63),
-        text_x=0.88,
-        text_y=0.65,
-        radius=0.2,
-    )
-
-    # Annotate states with arrows
-    annotate_state_with_arrows(
-        data,
-        fig,
-        state_code="RI",
-        column_name=column_to_plot,
-        tail_position=(0.863, 0.6),
-        head_position=(0.815, 0.62),
-        text_x=0.88,
-        text_y=0.6,
-        radius=-0.18,
-    )
-
-    # Annotate states with arrows
-    annotate_state_with_arrows(
-        data,
-        fig,
-        state_code="CT",
-        column_name=column_to_plot,
-        tail_position=(0.86, 0.57),
-        head_position=(0.8, 0.62),
-        text_x=0.88,
-        text_y=0.57,
-        radius=-0.2,
-    )
-
-    # Annotate states with arrows
-    annotate_state_with_arrows(
-        data,
-        fig,
-        state_code="NJ",
-        column_name=column_to_plot,
-        tail_position=(0.86, 0.525),
-        head_position=(0.775, 0.58),
-        text_x=0.87,
-        text_y=0.515,
-        radius=0.4,
-    )
-
-    # Annotate states with arrows
-    annotate_state_with_arrows(
-        data,
-        fig,
-        state_code="DE",
-        column_name=column_to_plot,
-        tail_position=(0.83, 0.50),
-        head_position=(0.7675, 0.565),
-        text_x=0.83,
-        text_y=0.49,
-        radius=0.35,
-    )
-
-    # Annotate states with arrows
-    annotate_state_with_arrows(
-        data,
-        fig,
-        state_code="MD",
-        column_name=column_to_plot,
-        tail_position=(0.79, 0.48),
-        head_position=(0.76, 0.56),
-        text_x=0.79,
-        text_y=0.47,
-        radius=0.3,
-    )
-
-    # Annotate states with arrows
-    annotate_state_with_arrows(
-        data,
-        fig,
-        state_code="VT",
-        column_name=column_to_plot,
-        tail_position=(0.76, 0.70),
-        head_position=(0.8, 0.67),
-        text_x=0.74,
-        text_y=0.7,
-        radius=-0.2,
-    )
-
-    # Annotate states with arrows
-    annotate_state_with_arrows(
-        data,
-        fig,
-        state_code="NH",
-        column_name=column_to_plot,
-        tail_position=(0.8, 0.73),
-        head_position=(0.815, 0.65),
-        text_x=0.78,
-        text_y=0.74,
-        radius=-0.1,
-    )
+    # Loop through state codes and annotate each one
+    for state_code in state_codes_arrows:
+        params = arrow_parameters.get(state_code, {})
+        annotate_state_with_arrows(
+            data,
+            ax=ax_main,
+            state_code=state_code,
+            column_name=column_to_plot,
+            tail_position=params.get("tail_position"),
+            head_position=params.get("head_position"),
+            radius=params.get("radius"),
+            text_color=text_color,
+            other_font=other_font,
+        )
 
     # Annotate the states
     annotate_states(
-        contiguous_us[~contiguous_us["STUSPS"].isin(outside_state_codes)],
+        contiguous_us[~contiguous_us["STUSPS"].isin(state_codes_arrows)],
         ax_main,
         value_col=column_to_plot,
         color_text=text_color,
@@ -406,9 +341,6 @@ def update(frame):
     for ax in fig.axes:
         ax.set_axis_off()
 
-    set_background_color(ax_hawaii)
-    set_background_color(ax_alaska)
-
     legend_handles = [
         mpatches.Patch(color=color, label=label) for label, color in color_mapping.items()
     ]
@@ -426,7 +358,7 @@ def update(frame):
 
     # title
     fig_text(
-        s=f"Home ownership by State in {frame}",
+        s="Home ownership by State",
         x=0.18,
         y=0.9,
         color=text_color,
@@ -435,6 +367,26 @@ def update(frame):
         ha="left",
         va="top",
         ax=ax,
+    )
+    
+    # Year
+    ax_text(
+        s=f"{frame}",
+        x=-120,
+        y=29,
+        color=text_color,
+        fontsize=32,
+        font=other_font,
+        ha="left",
+        va="top",
+        ax=ax_main,
+        bbox=dict(
+            boxstyle="round,pad=0.3",
+            edgecolor="black",
+            facecolor="white",
+            linestyle="dotted",
+            alpha=0.8,
+        ),
     )
 
     # caption
