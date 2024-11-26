@@ -200,4 +200,5 @@ fig.text(
 # Adjust layout and show the plot
 plt.tight_layout()
 plt.subplots_adjust(top=0.85, bottom=0.025)
+plt.savefig("../reports/facet_migration", dpi=300, bbox_inches="tight")
 plt.show()
