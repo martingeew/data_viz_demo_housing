@@ -144,16 +144,18 @@ def plot_with_legend(data, ax, xlim, ylim):
 
 
 # Load the fonts
+text_color = "#333333" # charcoal
+
+# Load the fonts
 font = load_font(
-    "https://github.com/dharmatype/Bebas-Neue/blob/master/fonts/BebasNeue(2018)ByDhamraType/ttf/BebasNeue-Regular.ttf?raw=true"
+    "https://github.com/google/fonts/blob/main/ofl/cabincondensed/CabinCondensed-SemiBold.ttf?raw=true"
 )
 other_font = load_font(
-    "https://github.com/bBoxType/FiraSans/blob/master/Fira_Sans_4_3/Fonts/Fira_Sans_TTF_4301/Normal/Roman/FiraSans-Light.ttf?raw=true"
+    "https://github.com/google/fonts/blob/main/ofl/cabincondensed/CabinCondensed-Regular.ttf?raw=true"
 )
 other_bold_font = load_font(
-    "https://github.com/bBoxType/FiraSans/blob/master/Fira_Sans_4_3/Fonts/Fira_Sans_TTF_4301/Normal/Roman/FiraSans-Medium.ttf?raw=true"
+    "https://github.com/google/fonts/blob/main/ofl/cabincondensed/CabinCondensed-Medium.ttf?raw=true"
 )
-text_color = "black"
 
 # Offsets for individual state annotations
 adjustments = {
