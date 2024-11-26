@@ -55,7 +55,7 @@ def annotate_states(geo_df, ax, value_col, color_text, other_font, other_bold_fo
             font=other_font,
             color=color_text,
             ax=ax,
-            highlight_textprops=[{"font": other_bold_font}],
+            highlight_textprops=[{"font": font, 'color':"black"}],
         )
 
 
@@ -69,6 +69,7 @@ def annotate_state_with_arrows(
     radius,
     text_color,
     other_font,
+    other_bold_font,
 ):
     """
     Annotates a state on a plot with an arrow and text label.
@@ -110,7 +111,7 @@ def annotate_state_with_arrows(
         s=f"<{state_code}>: {state_value:.1f}",
         x=x,
         y=y,
-        highlight_textprops=[{"font": other_bold_font}],
+        highlight_textprops=[{"font": other_bold_font, 'color':"black"}],
         color=text_color,
         fontsize=9,
         font=other_font,
@@ -152,9 +153,6 @@ font = load_font(
 )
 other_font = load_font(
     "https://github.com/google/fonts/blob/main/ofl/cabincondensed/CabinCondensed-Regular.ttf?raw=true"
-)
-other_bold_font = load_font(
-    "https://github.com/google/fonts/blob/main/ofl/cabincondensed/CabinCondensed-Medium.ttf?raw=true"
 )
 
 # Offsets for individual state annotations
@@ -315,6 +313,7 @@ for state_code in state_codes_arrows:
         radius=params.get("radius"),
         text_color=text_color,
         other_font=other_font,
+        other_bold_font=other_font
     )
 
 # Annotate the states
@@ -324,7 +323,7 @@ annotate_states(
     value_col=column_to_plot,
     color_text=text_color,
     other_font=other_font,
-    other_bold_font=other_bold_font,
+    other_bold_font=other_font,
 )
 annotate_states(
     alaska,
@@ -332,7 +331,7 @@ annotate_states(
     value_col=column_to_plot,
     color_text=text_color,
     other_font=other_font,
-    other_bold_font=other_bold_font,
+    other_bold_font=other_font,
 )
 annotate_states(
     hawaii,
@@ -340,7 +339,7 @@ annotate_states(
     value_col=column_to_plot,
     color_text=text_color,
     other_font=other_font,
-    other_bold_font=other_bold_font,
+    other_bold_font=other_font,
 )
 
 for ax in fig.axes:
@@ -364,7 +363,7 @@ fig.legend(
 
 # title
 fig_text(
-    s="Home Ownership Rate by State: 2023",
+    s="Homeownership Rate by State: 2023",
     x=0.18,
     y=0.9,
     color=text_color,
@@ -381,7 +380,7 @@ fig_text(
     x=0.93,
     y=0.035,
     color=text_color,
-    fontsize=8,
+    fontsize=10,
     font=other_font,
     ha="right",
     va="top",
@@ -394,7 +393,7 @@ fig_text(
     x=0.93,
     y=0.055,
     color=text_color,
-    fontsize=8,
+    fontsize=10,
     font=other_font,
     ha="right",
     va="top",
