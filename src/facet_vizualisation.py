@@ -156,7 +156,7 @@ handles = [
 # Add legend for the lines
 fig.legend(
     handles=handles,
-    loc=(0.75, 0.78),  # This coord is bottom-left corner
+    loc=(0.75, 0.81),  # This coord is bottom-left corner
     ncol=2,  # 1 row, 2 columns layout
     columnspacing=1,  # Space between columns
     handlelength=1.2,  # Line length
@@ -172,7 +172,7 @@ inflow = patches.Patch(facecolor=RED_LIGHT, alpha=0.3, label="Net inflow")
 
 fig.legend(
     handles=[outflow, inflow],
-    loc=(0.75, 0.75),  # This coord is top-right corner
+    loc=(0.75, 0.78),  # This coord is top-right corner
     ncol=2,  # 1 row, 2 columns layout
     columnspacing=1,  # Space between columns
     handlelength=2,  # Area length
@@ -221,6 +221,6 @@ fig.text(
 
 # Adjust layout and show the plot
 plt.tight_layout()
-plt.subplots_adjust(top=0.85, bottom=0.04)
+plt.subplots_adjust(top=0.89, bottom=0.04)
 plt.savefig("../reports/facet_migration", dpi=300, bbox_inches="tight")
 plt.show()
