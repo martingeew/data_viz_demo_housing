@@ -162,11 +162,11 @@ fig.legend(
 
 # Title
 fig.text(
-    s="Which migrants are replacing the loss of New Zealand citizens?",
+    s="Which migrants are replacing New Zealand citizens that leave?",
     x=0.05,
     y=1.025,
     color=CHARCOAL,
-    fontsize=26,
+    fontsize=30,
     font=font,
     ha="left",
     va="top",
@@ -191,7 +191,7 @@ fig.text(
     x=0.98,
     y=-0.05,
     color=CHARCOAL,
-    fontsize=11,
+    fontsize=12,
     font=other_font,
     ha="right",
     va="baseline",
