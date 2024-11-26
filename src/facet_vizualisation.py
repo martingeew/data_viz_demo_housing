@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D # for the legend
 
 import matplotlib.patches as patches # for the legend
+from pyfonts import load_font
 
 
 ### Facet plot
@@ -32,7 +33,19 @@ GREY25 = "#404040"
 GREY20 = "#333333"
 CHARCOAL = "#333333"
 
-font = "Consolas"  # techy feel
+# font = "Consolas"  # techy feel
+
+# Load the fonts
+font = load_font(
+    "https://github.com/dharmatype/Bebas-Neue/blob/master/fonts/BebasNeue(2018)ByDhamraType/ttf/BebasNeue-Regular.ttf?raw=true"
+)
+other_font = load_font(
+    "https://github.com/bBoxType/FiraSans/blob/master/Fira_Sans_4_3/Fonts/Fira_Sans_TTF_4301/Normal/Roman/FiraSans-Light.ttf?raw=true"
+)
+other_bold_font = load_font(
+    "https://github.com/bBoxType/FiraSans/blob/master/Fira_Sans_4_3/Fonts/Fira_Sans_TTF_4301/Normal/Roman/FiraSans-Medium.ttf?raw=true"
+)
+text_color = "black"
 
 def single_plot(x, y1, y2, name, ax):
 
@@ -69,7 +82,7 @@ def single_plot(x, y1, y2, name, ax):
     ax.spines["right"].set_color("none")
     ax.spines["top"].set_color("none")
     # added a 'size' argument
-    ax.set_title(name, weight="bold", size=9, color=CHARCOAL)
+    ax.set_title(name, weight="bold", size=9, color=CHARCOAL, font=other_bold_font)
 
 
 
@@ -125,7 +138,9 @@ fig.legend(
     ncol=2,           # 1 row, 2 columns layout
     columnspacing=1,  # Space between columns
     handlelength=1.2, # Line length
-    frameon=False     # No frame
+    frameon=False,     # No frame
+    prop=other_font,
+    fontsize=14
 )
 
 
@@ -141,6 +156,8 @@ fig.legend(
     handlelength=2,  # Area length
     handleheight=2,  # Area height
     frameon=False,   # No frame
+    prop=other_font,
+    fontsize=14
 )
 
 # Title
@@ -149,7 +166,7 @@ fig.text(
     x=0.05,
     y=1.025,
     color=CHARCOAL,
-    fontsize=24,
+    fontsize=26,
     font=font,
     ha="left",
     va="top",
@@ -162,8 +179,8 @@ fig.text(
     x=0.05,
     y=0.97,
     color=CHARCOAL,
-    fontsize=17,
-    font=font,
+    fontsize=16,
+    font=other_bold_font,
     ha="left",
     va="top",
 )
@@ -175,7 +192,7 @@ fig.text(
     y=-0.05,
     color=CHARCOAL,
     fontsize=11,
-    font=font,
+    font=other_font,
     ha="right",
     va="baseline",
 )
